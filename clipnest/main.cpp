@@ -2,6 +2,7 @@
 #include <Windows.h>
 
 #include "win32/app.h"
+#include "win32/shell.h"
 #include "win32/shell_notify_icon.h"
 #include "win32/popup_menu.h"
 #include "win32/clipboard.h"
@@ -9,32 +10,59 @@
 #include "str.h"
 #include "fmt/core.h"
 
+#include "operation.h"
+
 #define OWN_WM_NOTIFY_ICON_MESSAGE WM_APP + 1
 
+const size_t MAX_MI_LENGTH{ 20 };
+
 using namespace std;
+using namespace clipnest;
 
 void calculate(win32::shell_notify_icon& sni, win32::popup_menu& m) {
     string input = win32::clipboard::get_text();
 
     m.clear();
 
-    size_t wc = str::word_count(input);
-    //sni.set_tooptip(fmt::format("{} word(s)", wc));
-    m.add("ln", fmt::format("length: {}", input.length()));
-    m.add("wc", fmt::format("words: {}", wc));
-    m.add("64", fmt::format("base64: {}",
-        str::base64_encode((const unsigned char*)input.c_str(), input.length())));
+    string title_input = input;
+    if (title_input.length() > MAX_MI_LENGTH) {
+        title_input = fmt::format("{}... ({})", title_input.substr(0, MAX_MI_LENGTH), input.length());
+    }
+    m.add("input", title_input, true);
     m.separator();
+
+    operation::compute_all(input);
+
+    for (auto& opp : operation::all) {
+        shared_ptr<operation> op = opp.second;
+        string value = op->result;
+        if (value.length() > MAX_MI_LENGTH) {
+            value = fmt::format("{}... ({})", value.substr(0, MAX_MI_LENGTH), value.length());
+        }
+        string title = fmt::format("{}: {}", op->name, value);
+        m.add(op->id, title);
+    }
+
+    m.separator();
+    m.add("?", "&About");
     m.add("x", "&Exit");
 }
 
+void copy_op_result(const std::string& op_id) {
+    auto it = operation::all.find(op_id);
+    if (it == operation::all.end()) return;
+    auto op = (*it).second;
+    win32::clipboard::set_text(op->result);
+}
+
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
+
+    clipnest::operation::init();
 
     win32::app win32app;
     win32app.add_clipboard_listener();
 
     win32::popup_menu m{ win32app.get_hwnd() };
-    m.add("x", "&Exit");
 
     // notification icon
     win32::shell_notify_icon sni{ win32app.get_hwnd(), OWN_WM_NOTIFY_ICON_MESSAGE };
@@ -53,8 +81,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
             case WM_COMMAND: {
                 int loword_wparam = LOWORD(wParam);
                 string id = m.id_from_loword_wparam(loword_wparam);
+                if (id == "?") {
+                    win32::shell::exec("https://www.aloneguid.uk/projects/clipnest/", "");
+                }
                 if (id == "x") {
                     ::PostQuitMessage(0);
+                } else {
+                    copy_op_result(id);
                 }
             }
                 break;

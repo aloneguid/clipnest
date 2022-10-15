@@ -59,6 +59,6 @@ jobs:
     - uses: actions/upload-artifact@v2
       name: Collect Artifacts
       with:
-        name: native
+        name: exe
         path: |
           build/clipnest/Release/*.exe

@@ -4,7 +4,7 @@ set(APP_NAME clipnest)
 
 find_package(fmt CONFIG REQUIRED)
 
-add_executable (${APP_NAME} WIN32 "main.cpp"
+add_executable (${APP_NAME} WIN32 "main.cpp" "operation.cpp"
     "../common/str.cpp"
     "../common/config/config.cpp"
     "../common/fss.cpp"
@@ -12,6 +12,7 @@ add_executable (${APP_NAME} WIN32 "main.cpp"
     "../common/win32/window.cpp"
     "../common/win32/process.cpp"
     "../common/win32/app.cpp"
+    "../common/win32/shell.cpp"
     "../common/win32/shell_notify_icon.cpp"
     "../common/win32/popup_menu.cpp"
     "../common/config/config.cpp"
