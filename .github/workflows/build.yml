@@ -52,13 +52,13 @@ jobs:
       run: cmake --build build --config ${{ matrix.cconfig }}
       working-directory: .
 
-    - name: debug
-      run: ls -R
-      working-directory: .
+    #- name: debug
+    #  run: ls -R
+    #  working-directory: .
 
     - uses: actions/upload-artifact@v2
       name: Collect Artifacts
       with:
         name: native
         path: |
-          bin/*
+          build/clipnest/Release/*.exe
