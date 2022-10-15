@@ -46,19 +46,19 @@ jobs:
 
     - name: configure
       run: cmake -B build -S . -D CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D "CMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
-      working-directory: native
+      working-directory: .
 
     - name: build
       run: cmake --build build --config ${{ matrix.cconfig }}
-      working-directory: native
+      working-directory: .
 
     - name: debug
       run: ls -R
-      working-directory: native
+      working-directory: .
 
     - uses: actions/upload-artifact@v2
       name: Collect Artifacts
       with:
         name: native
         path: |
-          native/bin/*
+          bin/*
