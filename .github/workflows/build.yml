@@ -1,0 +1,64 @@
+name: 'Build Executable'
+
+env:
+  VERSION: 1.0.0
+  BUILD_TYPE: Release
+
+on:
+  push:
+    branches:
+      - master
+
+  pull_request:
+    branches:
+      - master
+
+  workflow_dispatch:
+
+jobs:
+  # builds native codecs binary for all supported OSes
+  build-native:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+        include:
+          - os: windows-latest
+            triplet: x64-windows-static
+            cconfig: Release
+    name: native ${{ matrix.os }} executable
+
+    env:
+      VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
+
+    steps:
+      
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - uses: friendlyanon/setup-vcpkg@v1
+      # seems like the absense of commit hash expects vcpkg submodule, i don't want that
+      with:
+        committish: 8e8a3d7c1a6f7f587b486663b1e814911e6f2342
+        # set to false to clear any cache in case of build errors
+        cache: false
+
+    - name: configure
+      run: cmake -B build -S . -D CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D "CMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+      working-directory: native
+
+    - name: build
+      run: cmake --build build --config ${{ matrix.cconfig }}
+      working-directory: native
+
+    - name: debug
+      run: ls -R
+      working-directory: native
+
+    - uses: actions/upload-artifact@v2
+      name: Collect Artifacts
+      with:
+        name: native
+        path: |
+          native/bin/*
