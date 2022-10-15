@@ -1,0 +1,9 @@
+{
+    "name": "clipnest",
+    "version-string": "latest",
+    "dependencies": [
+        "fmt",
+        "nlohmann-json",
+        "simpleini"
+    ]
+}
