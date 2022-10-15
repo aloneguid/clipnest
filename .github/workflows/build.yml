@@ -1,7 +1,7 @@
 name: 'Build Executable'
 
 env:
-  VERSION: 1.0.0
+  VERSION: 1.0.1
   BUILD_TYPE: Release
 
 on:
@@ -43,6 +43,10 @@ jobs:
         committish: 8e8a3d7c1a6f7f587b486663b1e814911e6f2342
         # set to false to clear any cache in case of build errors
         cache: false
+
+    - name: pre-build
+      run: .\prebuild.ps1
+      working-directory: .
 
     - name: configure
       run: cmake -B build -S . -D CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D "CMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
