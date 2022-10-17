@@ -20,28 +20,40 @@ const size_t MAX_MI_LENGTH{ 20 };
 using namespace std;
 using namespace clipnest;
 
+string mi_txt(const std::string& s) {
+    string r = s;
+    if (r.length() > MAX_MI_LENGTH) {
+        r = fmt::format("{}... ({})", r.substr(0, MAX_MI_LENGTH), r.length());
+    }
+    return r;
+}
+
 void calculate(win32::shell_notify_icon& sni, win32::popup_menu& m) {
     string input = win32::clipboard::get_text();
 
     m.clear();
 
-    string title_input = input;
-    if (title_input.length() > MAX_MI_LENGTH) {
-        title_input = fmt::format("{}... ({})", title_input.substr(0, MAX_MI_LENGTH), input.length());
-    }
-    m.add("input", title_input, true);
-    m.separator();
+    if (input.empty()) {
+        m.add("input", "clipboard empty", true);
+    } else {
+        m.add("input", mi_txt(input), true);
 
-    operation::compute_all(input);
+        m.separator();
 
-    for (auto& opp : operation::all) {
-        shared_ptr<operation> op = opp.second;
-        string value = op->result;
-        if (value.length() > MAX_MI_LENGTH) {
-            value = fmt::format("{}... ({})", value.substr(0, MAX_MI_LENGTH), value.length());
+        operation::compute_all(input);
+
+        for (auto& cvec : operation::cat_to_ops) {
+            const std::string& cat = cvec.first;
+
+            if (!cat.empty()) m.enter_submenu(cat);
+
+            for (auto& op : cvec.second) {
+                string title = fmt::format("{}: {}", op->name, mi_txt(op->result));
+                m.add(op->id, title);
+            }
+
+            if (!cat.empty()) m.exit_submenu();
         }
-        string title = fmt::format("{}: {}", op->name, value);
-        m.add(op->id, title);
     }
 
     m.separator();

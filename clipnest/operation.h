@@ -1,22 +1,25 @@
 #include <string>
 #include <map>
 #include <memory>
+#include<vector>
 
 namespace clipnest {
 	class operation {
     public:
-        operation(const std::string& id, const std::string& name) 
-            : id{ id }, name{ name } {
+        operation(const std::string& category, const std::string& id, const std::string& name) 
+            : category{ category }, id { id }, name{ name } {
 
         }
 
         virtual void compute(const std::string& input) = 0;
 
+        const std::string category;
         const std::string id;
         const std::string name;
 
         std::string result;
 
+        static std::map<std::string, std::vector<std::shared_ptr<operation>>> cat_to_ops;
         static std::map<std::string, std::shared_ptr<operation>> all;
 
         static void init();
@@ -28,6 +31,10 @@ namespace clipnest {
         template<class TOp> static void add() {
             auto ptr = std::make_shared<TOp>();
             all[ptr->id] = ptr;
+
+            const std::string& cat = ptr->category;
+            auto& vec = cat_to_ops[cat];
+            vec.push_back(ptr);
         }
 	};
 }
