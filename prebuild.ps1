@@ -18,4 +18,4 @@ $gh = ".\clipnest\global.h"
  # update version in global.h
 (Get-Content $gh) `
     -replace "Version\s*=\s*""(1.*)""", "Version = ""$version""" |
-    Out-File $sh
+    Out-File $gh
