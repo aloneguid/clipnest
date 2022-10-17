@@ -10,6 +10,7 @@
 #include "str.h"
 #include "fmt/core.h"
 
+#include "global.h"
 #include "operation.h"
 
 #define OWN_WM_NOTIFY_ICON_MESSAGE WM_APP + 1
@@ -44,7 +45,7 @@ void calculate(win32::shell_notify_icon& sni, win32::popup_menu& m) {
     }
 
     m.separator();
-    m.add("?", "&About");
+    m.add("?", fmt::format("&About {} {}", ProductName, Version));
     m.add("x", "&Exit");
 }
 
