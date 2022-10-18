@@ -2,6 +2,7 @@
 #include <map>
 #include <memory>
 #include<vector>
+#include <functional>
 
 namespace clipnest {
 	class operation {
@@ -36,5 +37,9 @@ namespace clipnest {
             auto& vec = cat_to_ops[cat];
             vec.push_back(ptr);
         }
+
+        static void add(const std::string& id, const std::string& name,
+            std::function<std::string(const std::string&)> fn,
+            const std::string& category);
 	};
 }

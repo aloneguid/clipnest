@@ -44,15 +44,21 @@ void calculate(win32::shell_notify_icon& sni, win32::popup_menu& m) {
 
         for (auto& cvec : operation::cat_to_ops) {
             const std::string& cat = cvec.first;
-
-            if (!cat.empty()) m.enter_submenu(cat);
+            bool cat_entered = false;
 
             for (auto& op : cvec.second) {
+                if (op->result.empty()) continue;
+
+                if (!cat.empty() && !cat_entered) {
+                    m.enter_submenu(cat);
+                    cat_entered = true;
+                }
+
                 string title = fmt::format("{}: {}", op->name, mi_txt(op->result));
                 m.add(op->id, title);
             }
 
-            if (!cat.empty()) m.exit_submenu();
+            if (!cat.empty() && cat_entered) m.exit_submenu();
         }
     }
 
