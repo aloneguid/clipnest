@@ -83,6 +83,10 @@ namespace clipnest {
         add("sha256", "SHA-256", [](const string& input) {
             return win32::cng::sha256(input);
         }, CatHash);
+
+        add("sha512", "SHA-512", [](const string& input) {
+            return win32::cng::sha512(input);
+        }, CatHash);
     }
 
     void operation::compute_all(const string& input) {
