@@ -1,7 +1,7 @@
 #include "operation.h"
 #include "str.h"
 #include <functional>
-#include "hash.h"
+#include "win32/cng.h"
 
 using namespace std;
 
@@ -77,11 +77,11 @@ namespace clipnest {
         }, CatNumbers);
 
         add("md5", "MD5", [](const string& input) {
-            return md5(input);
+            return win32::cng::md5(input);
         }, CatHash);
 
         add("sha256", "SHA-256", [](const string& input) {
-            return sha256(input);
+            return win32::cng::sha256(input);
         }, CatHash);
     }
 

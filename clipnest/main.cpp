@@ -15,7 +15,7 @@
 
 #define OWN_WM_NOTIFY_ICON_MESSAGE WM_APP + 1
 
-const size_t MAX_MI_LENGTH{ 20 };
+const size_t MAX_MI_LENGTH{ 40 };
 
 using namespace std;
 using namespace clipnest;
