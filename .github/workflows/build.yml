@@ -17,7 +17,7 @@ on:
 
 jobs:
   # builds native codecs binary for all supported OSes
-  build-native:
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -56,6 +56,10 @@ jobs:
       run: cmake --build build --config ${{ matrix.cconfig }}
       working-directory: .
 
+    - name: zip
+      run: 'Compress-Archive -Path build/clipnest/Release/*.exe clipnest-${{ env.VERSION }}.zip -CompressionLevel Optimal'
+      working-directory: .
+
     #- name: debug
     #  run: ls -R
     #  working-directory: .
@@ -65,4 +69,12 @@ jobs:
       with:
         name: exe
         path: |
-          build/clipnest/Release/*.exe
+          *.zip
+
+    - name: 'gh release'
+      uses: softprops/action-gh-release@v1
+      if: github.ref == 'refs/heads/master'
+      with:
+        tag_name: ${{ env.VERSION }}
+        name: ${{ env.VERSION }}
+        files: "*.zip"
