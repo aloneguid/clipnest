@@ -4,6 +4,7 @@
     "dependencies": [
         "fmt",
         "nlohmann-json",
-        "simpleini"
+        "simpleini",
+        "openssl"
     ]
 }

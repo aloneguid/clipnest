@@ -1,6 +1,7 @@
 #include "operation.h"
 #include "str.h"
 #include <functional>
+#include "hash.h"
 
 using namespace std;
 
@@ -12,6 +13,7 @@ namespace clipnest {
     const string CatEncoding = "encode";
     const string CatBasics = "basics";
     const string CatNumbers = "numbers";
+    const string CatHash = "hash";
 
     // Custom operations
 
@@ -73,6 +75,14 @@ namespace clipnest {
             }
             return r;
         }, CatNumbers);
+
+        add("md5", "MD5", [](const string& input) {
+            return md5(input);
+        }, CatHash);
+
+        add("sha256", "SHA-256", [](const string& input) {
+            return sha256(input);
+        }, CatHash);
     }
 
     void operation::compute_all(const string& input) {
