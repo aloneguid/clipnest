@@ -22,7 +22,7 @@ add_executable (${APP_NAME} WIN32 "main.cpp" "operation.cpp"
 set_property(TARGET ${APP_NAME} PROPERTY
   MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-target_link_libraries(${APP_NAME} PRIVATE fmt::fmt-header-only OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(${APP_NAME} PRIVATE fmt::fmt-header-only OpenSSL::SSL)
 
 target_sources(${APP_NAME} PRIVATE dpi-aware.manifest)
 target_include_directories(${APP_NAME} PRIVATE "../common")
