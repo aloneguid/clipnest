@@ -66,6 +66,12 @@ namespace clipnest {
             return r;
         }, CatBasics);
 
+        add("plain", "remove formatting", [](const string& input) {
+            string r = input;
+            str::trim(r);
+            return r;
+        }, CatBasics);
+
         add("filesize", "size", [](const string& input) {
             string r;
             try {
