@@ -92,7 +92,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     clipnest::operation::init();
 
     win32::app win32app;
-    win32app.add_clipboard_listener();
+    //win32app.add_clipboard_listener();
 
     win32::popup_menu m{ win32app.get_hwnd() };
 
@@ -126,9 +126,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                 }
             }
                 break;
-            case WM_CLIPBOARDUPDATE:
+            /*case WM_CLIPBOARDUPDATE:
                 calculate(sni, m);
-                return 0;
+                return 0;*/
         }
         return 0;
     };
