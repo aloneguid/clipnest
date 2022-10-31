@@ -6,8 +6,11 @@
 #include "win32/shell_notify_icon.h"
 #include "win32/popup_menu.h"
 #include "win32/clipboard.h"
+#include "win32/reg.h"
+#include "ext/github.h"
 
 #include "str.h"
+#include "fss.h"
 #include "fmt/core.h"
 
 #include "global.h"
@@ -75,6 +78,15 @@ void copy_op_result(const std::string& op_id) {
 }
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
+
+    // add autostart entry
+    win32::reg::set_value(win32::reg::hive::current_user, "Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+        string("\"") + fss::get_current_exec_path() + "\"",
+        ProductName);
+
+    // check for latest release
+    ext::github gh;
+    gh.get_latest_release("aloneguid", "clipnest");
 
     clipnest::operation::init();
 

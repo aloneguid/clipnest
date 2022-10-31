@@ -16,7 +16,10 @@ add_executable (${APP_NAME} WIN32 "main.cpp" "operation.cpp"
     "../common/win32/shell_notify_icon.cpp"
     "../common/win32/popup_menu.cpp"
     "../common/win32/cng.cpp"
+    "../common/win32/http.cpp"
+    "../common/win32/reg.cpp"
     "../common/config/config.cpp"
+    "../common/ext/github.cpp"
     clipnest.rc)
 set_property(TARGET ${APP_NAME} PROPERTY
   MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
