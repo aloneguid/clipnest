@@ -67,7 +67,7 @@ void calculate(win32::shell_notify_icon& sni, win32::popup_menu& m) {
 
     m.separator();
     m.add("?", fmt::format("&About {} {}", ProductName, Version));
-    m.add("$", "Sponsor");
+    m.add("$", "Donate");
     m.add("x", "&Exit");
 }
 

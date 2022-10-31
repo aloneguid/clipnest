@@ -2,8 +2,10 @@
 #include "str.h"
 #include <functional>
 #include "win32/cng.h"
+#include <nlohmann/json.hpp>
 
 using namespace std;
+using json = nlohmann::json;
 
 namespace clipnest {
 
@@ -102,6 +104,15 @@ namespace clipnest {
 
         add("html", "strip HTML", [](const string& input) {
             return str::strip_html(input);
+        }, CatWeb);
+
+        add("json", "format JSON", [](const string& input) {
+            try {
+                auto j = json::parse(input);
+                return j.dump(4);
+            } catch (const json::parse_error& err) {
+                return string();
+            }
         }, CatWeb);
 
         add("x-email", "email", [](const string& input) {

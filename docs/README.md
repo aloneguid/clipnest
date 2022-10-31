@@ -36,6 +36,7 @@ Note that transformations only appear when they *can be computed*, for instance,
   - SHA-512
 - web utilities
   - strip HTML tags
+  - format JSON
 - data extraction
   - emails
   - IP addresses (v4 and v6)
