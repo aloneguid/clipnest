@@ -66,10 +66,14 @@ namespace clipnest {
             return r;
         }, CatBasics);
 
-        add("plain", "remove formatting", [](const string& input) {
+        add("trim", "trim", [](const string& input) {
             string r = input;
             str::trim(r);
             return r;
+        }, CatBasics);
+
+        add("plain", "remove non-ASCII chars", [](const string& input) {
+            return str::remove_non_ascii(input);
         }, CatBasics);
 
         add("filesize", "size", [](const string& input) {
