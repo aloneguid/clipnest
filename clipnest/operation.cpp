@@ -14,6 +14,8 @@ namespace clipnest {
     const string CatBasics = "basics";
     const string CatNumbers = "numbers";
     const string CatHash = "hash";
+    const string CatWeb = "web";
+    const string CatExtract = "extract";
 
     // Custom operations
 
@@ -97,6 +99,22 @@ namespace clipnest {
         add("sha512", "SHA-512", [](const string& input) {
             return win32::cng::sha512(input);
         }, CatHash);
+
+        add("html", "strip HTML", [](const string& input) {
+            return str::strip_html(input);
+        }, CatWeb);
+
+        add("x-email", "email", [](const string& input) {
+            return str::rgx_extract(input, "\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*.\\w+([-.]\\w+)*");
+        }, CatExtract);
+
+        add("x-ipv4", "IP v4", [](const string& input) {
+            return str::rgx_extract(input, "(\\b25[0-5]|\\b2[0-4][0-9]|\\b[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}");
+        }, CatExtract);
+
+        add("x-ipv4", "IP v6", [](const string& input) {
+            return str::rgx_extract(input, "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))");
+        }, CatExtract);
     }
 
     void operation::compute_all(const string& input) {
