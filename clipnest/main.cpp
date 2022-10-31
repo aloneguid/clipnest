@@ -67,6 +67,7 @@ void calculate(win32::shell_notify_icon& sni, win32::popup_menu& m) {
 
     m.separator();
     m.add("?", fmt::format("&About {} {}", ProductName, Version));
+    m.add("$", "Sponsor");
     m.add("x", "&Exit");
 }
 
@@ -114,10 +115,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                 int loword_wparam = LOWORD(wParam);
                 string id = m.id_from_loword_wparam(loword_wparam);
                 if (id == "?") {
-                    win32::shell::exec("https://www.aloneguid.uk/projects/clipnest/", "");
+                    win32::shell::exec("https://github.com/aloneguid/clipnest", "");
                 }
-                if (id == "x") {
+                else if (id == "x") {
                     ::PostQuitMessage(0);
+                } else if (id == "$") {
+                    win32::shell::exec("https://github.com/sponsors/aloneguid", "");
                 } else {
                     copy_op_result(id);
                 }
