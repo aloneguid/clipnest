@@ -50,7 +50,7 @@ void calculate(win32::shell_notify_icon& sni, win32::popup_menu& m) {
             bool cat_entered = false;
 
             for (auto& op : cvec.second) {
-                if (op->result.empty()) continue;
+                if (op->result.empty() || op->result == input) continue;
 
                 if (!cat.empty() && !cat_entered) {
                     m.enter_submenu(cat);
