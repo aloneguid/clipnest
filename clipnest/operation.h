@@ -1,12 +1,15 @@
+#pragma once
 #include <string>
 #include <map>
 #include <memory>
-#include<vector>
+#include <vector>
 #include <functional>
 
 namespace clipnest {
 	class operation {
     public:
+        typedef std::vector<std::shared_ptr<operation>> sopvec;
+
         operation(const std::string& category, const std::string& id, const std::string& name) 
             : category{ category }, id { id }, name{ name } {
 

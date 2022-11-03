@@ -1,5 +1,6 @@
 #include <string>
 #include <memory>
+#include <vector>
 #include <Windows.h>
 
 #include "win32/app.h"
@@ -27,55 +28,8 @@ const size_t MAX_MI_LENGTH{ 40 };
 using namespace std;
 using namespace clipnest;
 
+bool is_ui_open{ false };
 unique_ptr<grey::backend> active_backend;
-
-string mi_txt(const std::string& s) {
-    string r = s;
-    if (r.length() > MAX_MI_LENGTH) {
-        r = fmt::format("{}... ({})", r.substr(0, MAX_MI_LENGTH), r.length());
-    }
-    return r;
-}
-
-void calculate(win32::shell_notify_icon& sni, win32::popup_menu& m) {
-    string input = win32::clipboard::get_text();
-
-    m.clear();
-
-    if (input.empty()) {
-        m.add("input", "clipboard empty", true);
-    } else {
-        m.add("input", mi_txt(input), true);
-
-        m.separator();
-
-        operation::compute_all(input);
-
-        for (auto& cvec : operation::cat_to_ops) {
-            const std::string& cat = cvec.first;
-            bool cat_entered = false;
-
-            for (auto& op : cvec.second) {
-                if (op->result.empty() || op->result == input) continue;
-
-                if (!cat.empty() && !cat_entered) {
-                    m.enter_submenu(cat);
-                    cat_entered = true;
-                }
-
-                string title = fmt::format("{}: {}", op->name, mi_txt(op->result));
-                m.add(op->id, title);
-            }
-
-            if (!cat.empty() && cat_entered) m.exit_submenu();
-        }
-    }
-
-    m.separator();
-    m.add("?", fmt::format("&About {} {}", ProductName, Version));
-    m.add("$", "Donate");
-    m.add("x", "&Exit");
-}
 
 void copy_op_result(const std::string& op_id) {
     auto it = operation::all.find(op_id);
@@ -101,6 +55,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     //win32app.add_clipboard_listener();
 
     win32::popup_menu m{ win32app.get_hwnd() };
+    m.add("$", "Donate");
+    m.add("?", fmt::format("About {} v{}", ProductName, Version));
+    m.add("x", "Quit");
 
     // notification icon
     win32::shell_notify_icon sni{ win32app.get_hwnd(), OWN_WM_NOTIFY_ICON_MESSAGE };
@@ -109,6 +66,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     win32app.on_any_message = [](MSG& msg) {
         if (active_backend) {
             active_backend->run_one_frame();
+
+            if (!is_ui_open) {
+                active_backend.reset();
+            }
         }
     };
 
@@ -117,16 +78,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
             case OWN_WM_NOTIFY_ICON_MESSAGE:
                 switch (lParam) {
                     case WM_LBUTTONUP:
-                    case WM_RBUTTONUP:
-                        calculate(sni, m);
-
-                        {
-                            if (!active_backend) {
-                                active_backend = mini_result_popup::show();
-                            }
+                        if (!active_backend) {
+                            active_backend = mini_result_popup::show(is_ui_open);
                         }
-
                         //m.show();
+                        break;
+                    case WM_RBUTTONUP:
+                        m.show();
                         break;
                 }
                 break;
