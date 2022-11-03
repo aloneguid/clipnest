@@ -1,6 +1,6 @@
 # Clipnest
 
-<img src="icon.svg" width=80 height=80 align="left"/>
+![](screen.png)
 
 Perform most common string operations on the clipboard like word length, base64 encoding, md5, sha256 hashes and so on with ease. Missing an operation? Raise an issue here and myself or any willing contributor will make it happen. You are welcome to contribute the code as well!
 
@@ -12,8 +12,6 @@ Go to [releases](https://github.com/aloneguid/clipnest/releases) section and dow
 
 ## Using
 
-<img src="tray.png" width="300" align="left"/>
-
 To perform a function on clipboard content, simply click the notification icon that pops up the list of available transformations. Click the transformation to copy the result of it back into the clipboard. That's it!
 
 Note that transformations only appear when they *can be computed*, for instance, if clipboard content is not a base64-encoded string, then `base-64 decode` transformation will not appear in the popup.
@@ -23,7 +21,7 @@ Note that transformations only appear when they *can be computed*, for instance,
 - word length
 - number of words
 - encoding
-  - base 64 encoding / decoding
+  - [base 64](https://en.wikipedia.org/wiki/Base64) encoding / decoding
 - basics
   - convert to uppercase
   - convert to lowercase
@@ -32,8 +30,8 @@ Note that transformations only appear when they *can be computed*, for instance,
 - convert number to readable size
 - hashing
   - [MD5](https://en.wikipedia.org/wiki/MD5)
-  - SHA-256
-  - SHA-512
+  - [SHA-256](https://en.wikipedia.org/wiki/SHA-2)
+  - [SHA-512](https://en.wikipedia.org/wiki/SHA-2)
 - web utilities
   - strip HTML tags
   - format JSON
