@@ -66,6 +66,7 @@ jobs:
 
     - uses: actions/upload-artifact@v2
       name: Collect Artifacts
+      if: github.ref == 'refs/heads/master'
       with:
         name: exe
         path: |

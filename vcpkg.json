@@ -2,6 +2,15 @@
     "name": "clipnest",
     "version-string": "latest",
     "dependencies": [
+        {
+            "name": "imgui",
+            "features": [
+                "win32-binding",
+                "dx11-binding",
+                "docking-experimental"
+            ],
+            "platform": "windows & static"
+        },
         "fmt",
         "nlohmann-json",
         "simpleini"

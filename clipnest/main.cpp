@@ -1,4 +1,5 @@
 #include <string>
+#include <memory>
 #include <Windows.h>
 
 #include "win32/app.h"
@@ -15,6 +16,9 @@
 
 #include "global.h"
 #include "operation.h"
+#include "mini_result_popup.h"
+
+#include "grey.h"
 
 #define OWN_WM_NOTIFY_ICON_MESSAGE WM_APP + 1
 
@@ -22,6 +26,8 @@ const size_t MAX_MI_LENGTH{ 40 };
 
 using namespace std;
 using namespace clipnest;
+
+unique_ptr<grey::backend> active_backend;
 
 string mi_txt(const std::string& s) {
     string r = s;
@@ -100,6 +106,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     win32::shell_notify_icon sni{ win32app.get_hwnd(), OWN_WM_NOTIFY_ICON_MESSAGE };
     sni.set_tooptip(fmt::format("{} {}", ProductName, Version));
 
+    win32app.on_any_message = [](MSG& msg) {
+        if (active_backend) {
+            active_backend->run_one_frame();
+        }
+    };
+
     win32app.on_app_message = [&m, &win32app, &sni](UINT msg, WPARAM wParam, LPARAM lParam) {
         switch (msg) {
             case OWN_WM_NOTIFY_ICON_MESSAGE:
@@ -107,7 +119,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                     case WM_LBUTTONUP:
                     case WM_RBUTTONUP:
                         calculate(sni, m);
-                        m.show();
+
+                        {
+                            if (!active_backend) {
+                                active_backend = mini_result_popup::show();
+                            }
+                        }
+
+                        //m.show();
                         break;
                 }
                 break;
