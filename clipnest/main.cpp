@@ -38,13 +38,6 @@ alg::tracker t{ "clipnest", Version };
 string clipnest::LatestVersion;
 string clipnest::LatestVersionUrl;
 
-void copy_op_result(const std::string& op_id) {
-    auto it = operation::all.find(op_id);
-    if (it == operation::all.end()) return;
-    auto op = (*it).second;
-    win32::clipboard::set_text(op->result);
-}
-
 void check_updates() {
     // check for latest GitHub release
     ext::github gh;
@@ -62,10 +55,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
     check_updates();
 
+#ifndef _DEBUG
     // track start event for general stats, no personal data ever to be collected
     t.track(map<string, string> {
         { "event", "start" }
     });
+#endif
 
     clipnest::operation::init();
 
@@ -116,8 +111,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                     ::PostQuitMessage(0);
                 } else if (id == "$") {
                     win32::shell::exec("https://github.com/sponsors/aloneguid", "");
-                } else {
-                    copy_op_result(id);
                 }
             }
                 break;

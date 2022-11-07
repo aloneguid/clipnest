@@ -4,6 +4,7 @@
 #include <fmt/core.h>
 #include "win32/clipboard.h"
 #include "win32/shell.h"
+#include "str.h"
 
 using namespace grey;
 using namespace std;
@@ -27,6 +28,8 @@ namespace clipnest {
                 win32::shell::exec(LatestVersionUrl, "");
             };
         }
+
+        lbl_input = make_label("");
 
         tbl = make_complex_table<operation>({"Operation", "Result" });
         calculate();
@@ -60,7 +63,8 @@ namespace clipnest {
     }
 
     void mini_result_popup::calculate() {
-        string input = win32::clipboard::get_text();
+        string input = str::to_str(win32::clipboard::get_text());
+        lbl_input->set_value(input);
         operation::compute_all(input);
 
         results.clear();
@@ -81,7 +85,7 @@ namespace clipnest {
             auto v = row.cells[1]->make_selectable(ri->result);
             string fr = ri->result;
             v->on_click = [this, fr](component&) {
-                win32::clipboard::set_text(fr);
+                win32::clipboard::set_ascii_text(fr);
                 calculate();
             };
         }

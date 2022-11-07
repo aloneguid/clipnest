@@ -11,6 +11,7 @@ namespace clipnest {
         static std::unique_ptr<grey::backend> show(bool& is_ui_open);
 
     private:
+        std::shared_ptr<grey::label> lbl_input;
         std::shared_ptr<grey::complex_table<operation>> tbl;
         operation::sopvec results;
 

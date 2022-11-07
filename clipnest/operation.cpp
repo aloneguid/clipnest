@@ -3,6 +3,7 @@
 #include <functional>
 #include "win32/cng.h"
 #include <nlohmann/json.hpp>
+#include <fmt/core.h>
 
 using namespace std;
 using json = nlohmann::json;
@@ -126,6 +127,42 @@ namespace clipnest {
         add("x-ipv4", "IP v6", [](const string& input) {
             return str::rgx_extract(input, "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))");
         }, CatExtract);
+
+        add("dec2hex", "dec -> hex", [](const string& input) {
+            try {
+                long l = stol(input);
+                return fmt::format("{0:x}", l);
+            } catch (...) {
+                return string();
+            }
+        }, CatBasics);
+
+        add("hex2dec", "hex -> dec", [](const string& input) {
+            try {
+                long l = stol(input, nullptr, 16);
+                return fmt::format("{0}", l);
+            } catch (...) {
+                return string();
+            }
+        }, CatBasics);
+
+        add("dec2bin", "dec -> bin", [](const string& input) {
+            try {
+                long l = stol(input);
+                return fmt::format("{0:b}", l);
+            } catch (...) {
+                return string();
+            }
+        }, CatBasics);
+
+        add("bin2dec", "bin -> dec", [](const string& input) {
+            try {
+                long l = stol(input, nullptr, 2);
+                return fmt::format("{0}", l);
+            } catch (...) {
+                return string();
+            }
+        }, CatBasics);
     }
 
     void operation::compute_all(const string& input) {
