@@ -67,8 +67,9 @@ namespace clipnest {
             row.cells[0]->make_selectable(ri->name);
             auto v = row.cells[1]->make_selectable(ri->result);
             string fr = ri->result;
-            v->on_click = [fr](component&) {
+            v->on_click = [this, fr](component&) {
                 win32::clipboard::set_text(fr);
+                calculate();
             };
         }
     }
