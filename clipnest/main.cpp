@@ -1,6 +1,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <map>
 #include <Windows.h>
 
 #include "win32/app.h"
@@ -10,6 +11,7 @@
 #include "win32/clipboard.h"
 #include "win32/reg.h"
 #include "ext/github.h"
+#include "ext/alg_tracker.h"
 
 #include "str.h"
 #include "fss.h"
@@ -30,12 +32,25 @@ using namespace clipnest;
 
 bool is_ui_open{ false };
 unique_ptr<grey::backend> active_backend;
+alg::tracker t{ "clipnest", Version };
+
+// globals.h:
+string clipnest::LatestVersion;
+string clipnest::LatestVersionUrl;
 
 void copy_op_result(const std::string& op_id) {
     auto it = operation::all.find(op_id);
     if (it == operation::all.end()) return;
     auto op = (*it).second;
     win32::clipboard::set_text(op->result);
+}
+
+void check_updates() {
+    // check for latest GitHub release
+    ext::github gh;
+    ext::github_release latest = gh.get_latest_release("aloneguid", "clipnest");
+    LatestVersionUrl = latest.home_url;
+    LatestVersion = latest.tag;
 }
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
@@ -45,9 +60,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         string("\"") + fss::get_current_exec_path() + "\"",
         ProductName);
 
-    // check for latest release
-    ext::github gh;
-    gh.get_latest_release("aloneguid", "clipnest");
+    check_updates();
+
+    // track start event for general stats, no personal data ever to be collected
+    t.track(map<string, string> {
+        { "event", "start" }
+    });
 
     clipnest::operation::init();
 

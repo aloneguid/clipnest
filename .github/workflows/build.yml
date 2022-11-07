@@ -1,7 +1,7 @@
 name: 'Build Executable'
 
 env:
-  VERSION: 1.2.0
+  VERSION: 1.2.1
   BUILD_TYPE: Release
 
 on:

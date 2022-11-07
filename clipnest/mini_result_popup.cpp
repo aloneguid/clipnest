@@ -1,7 +1,9 @@
 #include "mini_result_popup.h"
 #include "global.h"
 #include <Windows.h>
+#include <fmt/core.h>
 #include "win32/clipboard.h"
+#include "win32/shell.h"
 
 using namespace grey;
 using namespace std;
@@ -10,10 +12,21 @@ namespace clipnest {
     mini_result_popup::mini_result_popup(grey::texture_mgr& mgr) : window{ mgr, ProductName, true } {
 
         auto cmd_calc = make_button("refresh");
+        cmd_calc->set_emphasis(emphasis::primary);
         cmd_calc->tooltip = "recalculate from clipboard";
         cmd_calc->on_pressed = [this](button&) {
             calculate();
         };
+
+        if (!LatestVersion.empty() && LatestVersion != Version) {
+            same_line();
+            auto cmd_upgrade = make_button(fmt::format("update to {}", LatestVersion));
+            cmd_upgrade->tooltip = "new version available!";
+            cmd_upgrade->set_emphasis(emphasis::warning);
+            cmd_upgrade->on_pressed = [](button&) {
+                win32::shell::exec(LatestVersionUrl, "");
+            };
+        }
 
         tbl = make_complex_table<operation>({"Operation", "Result" });
         calculate();
