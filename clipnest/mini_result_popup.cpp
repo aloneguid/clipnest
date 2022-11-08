@@ -63,7 +63,9 @@ namespace clipnest {
     }
 
     void mini_result_popup::calculate() {
-        string input = str::to_str(win32::clipboard::get_text());
+        string input = win32::clipboard::get_text();
+        if (input.empty()) input = win32::clipboard::get_filename();
+
         lbl_input->set_value(input);
         operation::compute_all(input);
 
