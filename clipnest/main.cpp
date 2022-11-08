@@ -55,17 +55,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
     check_updates();
 
-#ifndef _DEBUG
+//#ifndef _DEBUG
     // track start event for general stats, no personal data ever to be collected
     t.track(map<string, string> {
         { "event", "start" }
-    });
-#endif
+    }, true);
+//#endif
 
     clipnest::operation::init();
 
     win32::app win32app;
-    //win32app.add_clipboard_listener();
+    //win32app.add_clipboard_listener();    // AV really don't like this!
 
     win32::popup_menu m{ win32app.get_hwnd() };
     m.add("$", "Donate");
@@ -122,6 +122,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     };
 
     win32app.run();
+
+    t.flush();
 
     return 0;
 }

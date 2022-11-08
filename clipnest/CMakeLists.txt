@@ -5,7 +5,12 @@ set(APP_NAME clipnest)
 find_package(fmt CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 
-add_executable (${APP_NAME} WIN32 "main.cpp" "operation.cpp" "mini_result_popup.cpp"
+add_executable (${APP_NAME} WIN32 "main.cpp"
+
+    "operation.cpp"
+    "mini_result_popup.cpp"
+    "ops/disk.cpp"
+
     "../common/str.cpp"
     "../common/config/config.cpp"
     "../common/fss.cpp"
@@ -22,6 +27,7 @@ add_executable (${APP_NAME} WIN32 "main.cpp" "operation.cpp" "mini_result_popup.
     "../common/config/config.cpp"
     "../common/ext/github.cpp"
     "../common/ext/alg_tracker.cpp"
+    
     clipnest.rc)
 set_property(TARGET ${APP_NAME} PROPERTY
   MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")

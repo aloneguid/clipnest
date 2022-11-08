@@ -30,8 +30,6 @@ namespace clipnest {
 
         static void compute_all(const std::string& input);
         
-    private:
-
         template<class TOp> static void add() {
             auto ptr = std::make_shared<TOp>();
             all[ptr->id] = ptr;
@@ -44,5 +42,6 @@ namespace clipnest {
         static void add(const std::string& id, const std::string& name,
             std::function<std::string(const std::string&)> fn,
             const std::string& category);
+
 	};
 }

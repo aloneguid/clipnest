@@ -5,6 +5,8 @@
 #include <nlohmann/json.hpp>
 #include <fmt/core.h>
 
+#include "ops/disk.h"
+
 using namespace std;
 using json = nlohmann::json;
 
@@ -40,6 +42,9 @@ namespace clipnest {
     // Operation members
 
     void operation::init() {
+
+        // todo: move these out elsewhere
+
         add("len", "length", 
             [](const string& input) { return to_string(input.length()); }, CatNone);
 
@@ -163,6 +168,8 @@ namespace clipnest {
                 return string();
             }
         }, CatBasics);
+
+        clipnest::ops::disk::init();
     }
 
     void operation::compute_all(const string& input) {
