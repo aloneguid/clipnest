@@ -68,20 +68,23 @@ namespace clipnest {
 
     void mini_result_popup::calculate() {
         // get best available text
-        last_input = win32::clipboard::get_text();
-        if (last_input.empty()) last_input = win32::clipboard::get_filename();
+        {
+            string lis = win32::clipboard::get_text();
+            if (lis.empty()) lis = win32::clipboard::get_filename();
+            last_input = operation_input{ lis };
+        }
 
         t.track(map<string, string> {
             { "event", "calc" },
-            { "len", std::to_string(last_input.size()) }
+            { "len", std::to_string(last_input.value.size()) }
         }, false);
 
-        if (last_input.empty()) {
+        if (last_input.value.empty()) {
             lbl_input->set_value("empty clipboard");
             lbl_input->set_emphasis(emphasis::warning);
             lbl_input->is_enabled = true;
         } else {
-            lbl_input->set_value(ellipse(last_input));
+            lbl_input->set_value(ellipse(last_input.value));
             lbl_input->set_emphasis(emphasis::none);
             lbl_input->is_enabled = false;
         }
@@ -93,7 +96,7 @@ namespace clipnest {
             const std::string& cat = cvec.first;
 
             for (auto& op : cvec.second) {
-                if ((!op->is_dirty && op->result.empty()) || op->result == last_input) continue;
+                if ((!op->is_dirty && op->result.empty()) || op->result == last_input.value) continue;
 
                 results.push_back(op);
             }
@@ -126,8 +129,13 @@ namespace clipnest {
                 if (!cell->empty()) {
                     cell->get_child(0)->is_visible = false;
                 }
-                op->compute(last_input);
-                op->is_dirty = false;
+                try {
+                    op->compute(last_input);
+                    op->is_dirty = false;
+                }
+                catch (...) {
+
+                }
                 make_result_cell(cell, op);
             };
         } else {

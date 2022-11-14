@@ -9,6 +9,8 @@ add_executable (${APP_NAME} WIN32 "main.cpp"
 
     "operation.cpp"
     "mini_result_popup.cpp"
+
+    "ops/general.cpp"
     "ops/disk.cpp"
 
     "../common/str.cpp"
