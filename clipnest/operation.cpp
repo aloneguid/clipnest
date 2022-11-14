@@ -129,7 +129,7 @@ namespace clipnest {
             return str::rgx_extract(input, "(\\b25[0-5]|\\b2[0-4][0-9]|\\b[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}");
         }, CatExtract);
 
-        add("x-ipv4", "IP v6", [](const string& input) {
+        add("x-ipv6", "IP v6", [](const string& input) {
             return str::rgx_extract(input, "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))");
         }, CatExtract);
 
@@ -169,16 +169,29 @@ namespace clipnest {
             }
         }, CatBasics);
 
-        clipnest::ops::disk::init();
+        //clipnest::ops::disk::init();
     }
 
     void operation::compute_all(const string& input) {
+
+        bool is_too_large = input.length() > 1000;
+
         for (auto& op : all) {
-            op.second->compute(input);
+            auto o = op.second;
+            o->result.clear();
+
+            // todo: we also need to know whether it can do the conversion
+
+            if (is_too_large || o->is_expensive) {
+                o->is_dirty = true;
+            } else {
+                o->compute(input);
+                o->is_dirty = false;
+            }
         }
     }
 
-    void operation::add(
+    operation::sop operation::add(
         const std::string& id, const std::string& name, function<string(const string&)> fn, const std::string& category) {
         auto ptr = std::make_shared<lambda_op>(category, id, name, fn);
         all[ptr->id] = ptr;
@@ -186,5 +199,6 @@ namespace clipnest {
         const std::string& cat = ptr->category;
         auto& vec = cat_to_ops[cat];
         vec.push_back(ptr);
+        return ptr;
     }
 }

@@ -8,7 +8,8 @@
 namespace clipnest {
 	class operation {
     public:
-        typedef std::vector<std::shared_ptr<operation>> sopvec;
+        typedef std::shared_ptr<operation> sop;
+        typedef std::vector<sop> sopvec;
 
         operation(const std::string& category, const std::string& id, const std::string& name) 
             : category{ category }, id { id }, name{ name } {
@@ -21,6 +22,9 @@ namespace clipnest {
         const std::string id;
         const std::string name;
 
+        bool is_expensive{ false };
+        // when set, indicates operation has not finished calculations
+        bool is_dirty{ false };
         std::string result;
 
         static std::map<std::string, std::vector<std::shared_ptr<operation>>> cat_to_ops;
@@ -39,7 +43,7 @@ namespace clipnest {
             vec.push_back(ptr);
         }
 
-        static void add(const std::string& id, const std::string& name,
+        static sop add(const std::string& id, const std::string& name,
             std::function<std::string(const std::string&)> fn,
             const std::string& category);
 

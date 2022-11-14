@@ -10,6 +10,8 @@
 #include "win32/popup_menu.h"
 #include "win32/clipboard.h"
 #include "win32/reg.h"
+#include "win32/process.h"
+
 #include "ext/github.h"
 #include "ext/alg_tracker.h"
 
@@ -46,6 +48,9 @@ void check_updates() {
     LatestVersion = latest.tag;
 }
 
+void CALLBACK KeepAliveTimerProc(HWND hwnd, UINT message, UINT_PTR idTimer, DWORD dwTime) {
+    t.track(map<string, string> {        { "event", "ping" }    }, true);}
+
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
 
     // add autostart entry
@@ -66,6 +71,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
     win32::app win32app;
     //win32app.add_clipboard_listener();    // AV really don't like this!
+
+    // make us energy efficient
+    {
+        win32::process p;
+        p.set_priority(IDLE_PRIORITY_CLASS);
+        p.enable_efficiency_mode();
+    }
 
     win32::popup_menu m{ win32app.get_hwnd() };
     m.add("$", "Donate");
@@ -92,7 +104,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                 switch (lParam) {
                     case WM_LBUTTONUP:
                         if (!active_backend) {
-                            active_backend = mini_result_popup::show(is_ui_open);
+                            active_backend = mini_result_popup::show(is_ui_open, t);
                         }
                         //m.show();
                         break;
@@ -120,6 +132,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         }
         return 0;
     };
+
+
+    // set hourly keep-alive timer
+    ::SetTimer(win32app.get_hwnd(), 1, 1000 * 60 * 60, KeepAliveTimerProc);
 
     win32app.run();
 

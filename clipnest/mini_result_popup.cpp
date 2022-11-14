@@ -10,7 +10,8 @@ using namespace grey;
 using namespace std;
 
 namespace clipnest {
-    mini_result_popup::mini_result_popup(grey::texture_mgr& mgr) : window{ mgr, ProductName, true } {
+    mini_result_popup::mini_result_popup(grey::texture_mgr& mgr, alg::tracker& t) 
+        : t{ t }, window { mgr, ProductName, true } {
 
         auto cmd_calc = make_button("refresh");
         cmd_calc->set_emphasis(emphasis::primary);
@@ -29,15 +30,18 @@ namespace clipnest {
             };
         }
 
+        auto h1 = make_label("input: ");
+        h1->set_emphasis(emphasis::primary);
+        same_line();
         lbl_input = make_label("");
 
         tbl = make_complex_table<operation>({"Operation", "Result" });
         calculate();
     }
 
-    unique_ptr<backend> mini_result_popup::show(bool& is_ui_open) {
+    unique_ptr<backend> mini_result_popup::show(bool& is_ui_open, alg::tracker& t) {
         auto be = backend::make_platform_default(ProductName);
-        auto w = be->make_window<mini_result_popup>();
+        auto w = be->make_window<mini_result_popup>(t);
         is_ui_open = true;
         w->on_open_changed = [&is_ui_open](bool& is_open) {
             if (!is_open) {
@@ -63,31 +67,80 @@ namespace clipnest {
     }
 
     void mini_result_popup::calculate() {
-        string input = win32::clipboard::get_text();
-        if (input.empty()) input = win32::clipboard::get_filename();
+        // get best available text
+        last_input = win32::clipboard::get_text();
+        if (last_input.empty()) last_input = win32::clipboard::get_filename();
 
-        lbl_input->set_value(input);
-        operation::compute_all(input);
+        t.track(map<string, string> {
+            { "event", "calc" },
+            { "len", std::to_string(last_input.size()) }
+        }, false);
+
+        if (last_input.empty()) {
+            lbl_input->set_value("empty clipboard");
+            lbl_input->set_emphasis(emphasis::warning);
+            lbl_input->is_enabled = true;
+        } else {
+            lbl_input->set_value(ellipse(last_input));
+            lbl_input->set_emphasis(emphasis::none);
+            lbl_input->is_enabled = false;
+        }
+
+        operation::compute_all(last_input);
 
         results.clear();
         for (auto& cvec : operation::cat_to_ops) {
             const std::string& cat = cvec.first;
 
             for (auto& op : cvec.second) {
-                if (op->result.empty() || op->result == input) continue;
+                if ((!op->is_dirty && op->result.empty()) || op->result == last_input) continue;
 
                 results.push_back(op);
             }
         }
 
         tbl->clear();
-        for (auto& ri : results) {
+        for (auto ri : results) {
             auto row = tbl->make_row(ri);
-            row.cells[0]->make_selectable(ri->name);
-            auto v = row.cells[1]->make_selectable(ri->result);
-            string fr = ri->result;
-            v->on_click = [this, fr](component&) {
-                win32::clipboard::set_ascii_text(fr);
+            row.cells[0]->make_label(ri->name);
+            make_result_cell(row.cells[1], ri);
+        }
+    }
+
+    std::string mini_result_popup::ellipse(const std::string& s, size_t max) {
+        string r = s;
+        str::replace_all(r, "\r", "");
+        str::replace_all(r, "\n", "");
+        str::trim(r);
+
+        if (r.length() < max) return r;
+
+        return fmt::format("{}... ({})", r.substr(0, max), s.length());
+    }
+
+    void mini_result_popup::make_result_cell(std::shared_ptr<grey::table_cell> cell, operation::sop op) {
+        if (op->is_dirty) {
+            auto cc = cell->make_button("calc", true);
+            cc->set_emphasis(emphasis::primary);
+            cc->on_pressed = [this, op, cell](button&) {
+                if (!cell->empty()) {
+                    cell->get_child(0)->is_visible = false;
+                }
+                op->compute(last_input);
+                op->is_dirty = false;
+                make_result_cell(cell, op);
+            };
+        } else {
+            auto v = cell->make_selectable(op->result);
+            v->on_click = [this, op](component&) {
+                win32::clipboard::set_ascii_text(op->result);
+
+                t.track(map<string, string> {
+                    { "event", "copy_result" },
+                    { "len", std::to_string(op->result.size()) },
+                    { "op", op->id }
+                }, false);
+
                 calculate();
             };
         }
