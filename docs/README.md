@@ -27,6 +27,7 @@ Note that transformations only appear when they *can be computed*, for instance,
   - convert to lowercase
   - trim
   - remove non-ASCII characters
+  - deduplicate lines
 - convert number to readable size
 - hashing
   - [MD5](https://en.wikipedia.org/wiki/MD5)
@@ -38,6 +39,9 @@ Note that transformations only appear when they *can be computed*, for instance,
 - data extraction
   - emails
   - IP addresses (v4 and v6)
+- files
+  - get size
+
 
 
 ## Building

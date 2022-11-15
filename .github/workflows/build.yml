@@ -72,6 +72,9 @@ jobs:
         path: |
           *.zip
 
+    - name: build installer
+      uses: joncloud/makensis-action@publish
+
     - name: 'gh release'
       uses: softprops/action-gh-release@v1
       if: github.ref == 'refs/heads/master'
