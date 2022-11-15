@@ -8,7 +8,7 @@ Aims to be incredibly fast and incredibly small.
 
 ## Installing
 
-Go to [releases](https://github.com/aloneguid/clipnest/releases) section and download the latest zip with `.exe` to launch. It's self-contained and does not require any extra dependencies.
+Go to [releases](https://github.com/aloneguid/clipnest/releases) section and download installer or self-contained `.exe` in zip to launch. The zip is self-contained and does not require any extra dependencies. There is no difference between `.exe` inside the zip and inside the installer.
 
 ## Using
 
@@ -23,30 +23,26 @@ Note that transformations only appear when they *can be computed*, for instance,
 - encoding
   - [base 64](https://en.wikipedia.org/wiki/Base64) encoding / decoding
 - basics
-  - convert to uppercase
-  - convert to lowercase
+  - convert to uppercase/lowercase
   - trim
   - remove non-ASCII characters
   - deduplicate lines
-- convert number to readable size
-- hashing
-  - [MD5](https://en.wikipedia.org/wiki/MD5)
-  - [SHA-256](https://en.wikipedia.org/wiki/SHA-2)
-  - [SHA-512](https://en.wikipedia.org/wiki/SHA-2)
+- convert number to readable size (i.e. 3 kb etc.)
+- hashing input strings: [MD5](https://en.wikipedia.org/wiki/MD5), [SHA-256](https://en.wikipedia.org/wiki/SHA-2), [SHA-512](https://en.wikipedia.org/wiki/SHA-2)
 - web utilities
   - strip HTML tags
   - format JSON
 - data extraction
   - emails
   - IP addresses (v4 and v6)
-- files
-  - get size
+- number conversions
+  - decimal to hexadecimal, hexadecimal to decimal, decimal to binary, binary to decimal
 
-
+- get file size and content (after getting content you can apply other operations)
 
 ## Building
 
-To **build**, you need `cmake` and `C++ 20` and all the build steps are "documented" in github workflow file.
+To **build**, you need `cmake` and `C++ 20` and all the build steps are "documented" in GitHub workflow file.
 
 ## Contributing
 

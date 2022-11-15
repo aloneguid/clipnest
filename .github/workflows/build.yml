@@ -60,9 +60,12 @@ jobs:
       run: 'Compress-Archive -Path build/clipnest/Release/*.exe clipnest-${{ env.VERSION }}.zip -CompressionLevel Optimal'
       working-directory: .
 
-    #- name: debug
-    #  run: ls -R
-    #  working-directory: .
+    - name: build installer
+      uses: joncloud/makensis-action@publish
+
+    - name: debug
+      run: ls -R
+      working-directory: .
 
     - uses: actions/upload-artifact@v2
       name: Collect Artifacts
@@ -71,9 +74,7 @@ jobs:
         name: exe
         path: |
           *.zip
-
-    - name: build installer
-      uses: joncloud/makensis-action@publish
+          *.exe
 
     - name: 'gh release'
       uses: softprops/action-gh-release@v1
