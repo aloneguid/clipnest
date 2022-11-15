@@ -99,6 +99,8 @@ namespace clipnest::ops {
             long l = stol(input.value, nullptr, 2);
             return fmt::format("{0}", l);
         });
+
+        GEN_OP(CatBasics, "dedupe", "deduplicate lines", str::deduplicate_lines(input.value));
     }
 
     void general::add(const std::string& cat, const std::string& id, const std::string& name,
