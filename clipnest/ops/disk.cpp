@@ -15,9 +15,9 @@ namespace clipnest::ops {
             return std::to_string(size);
         });
 
-        /*add("f_md5", "file MD5", [](const operation_input& input) {
-            return "todo";
-        });*/
+        add("f_content", "read content", [](const operation_input& input) {
+            return fss::read_file_as_string(input.value);
+        });
     }
 
     void disk::add(const std::string& id, const std::string& name, std::function<std::string(const operation_input&)> fn) {
